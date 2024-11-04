@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CaminoNoEncontradoException {
         // Los vértices que corresponden a las escuelas
         Vertice escuelaN1 = new Vertice(1);
         Vertice escuelaN2 = new Vertice(2);
@@ -23,18 +23,31 @@ public class Main {
 
         // Agregamos las aristas entre los vértices y su dirección:
         G.agregarArista(escuelaN1.getId(), shark.getId(), 23);
+        G.agregarArista(shark.getId(), escuelaN2.getId(), 5);
         G.agregarArista(escuelaN2.getId(), fox.getId(), 10);
-        G.agregarArista(escuelaN1.getId(), escuelaN3.getId(), 5);
-        G.agregarArista(escuelaN3.getId(), city.getId(), 15);
-        G.agregarArista(fox.getId(), escuelaN2.getId(), 12);
+
+        //Camino 2, prueba de escuela1 id = 1 hasta gym FOX id = 7:
+        G.agregarArista(escuelaN1.getId(), city.getId(), 3);
+        G.agregarArista(city.getId(), escuelaN3.getId(), 7);
+        G.agregarArista(escuelaN3.getId(), fox.getId(), 3);
+
+        //Camino 3, prueba que sea directo:
+        G.agregarArista(escuelaN1.getId(), fox.getId(), 5);
 
         G.imprimirMatriz();
 
-        ArrayList<Vertice> caminoMinimo = G.encontrarCaminoMinimo(1, 7);
-        System.out.println("Camino mínimo encontrado desde 1 a 7:");
-        for (Vertice v : caminoMinimo) {
-            System.out.print(v.getId() + " ");
+        try {
+            ArrayList<Vertice> caminoMinimo = G.encontrarCaminoMinimo(1, 7);
+            System.out.print("Camino mínimo: ");
+            for (Vertice vertice : caminoMinimo) {
+                System.out.print(vertice.getId() + " ");
+            }
+            System.out.println();
+            int pesoTotal = G.calcularPesoTotal(caminoMinimo);
+            System.out.println("Peso total del camino: " + pesoTotal);
+
+        } catch (CaminoNoEncontradoException e) {
+            System.out.println(e.getMessage());
         }
-        System.out.println();
     }
 }

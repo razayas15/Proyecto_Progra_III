@@ -77,35 +77,29 @@ public class GrafoDirigido {
             System.out.println();
         }
     }
-    public ArrayList<Vertice> getVertices() {
-        return vertices;
-    }
-    public ArrayList<Vertice> encontrarCaminoMinimo(int origenId, int destinoId) {
+    public ArrayList<Vertice> encontrarCaminoMinimo(int origenId, int destinoId) throws CaminoNoEncontradoException {
         int origen = encontrarIndicePorId(origenId);
         int destino = encontrarIndicePorId(destinoId);
 
         if (origen == -1 || destino == -1) {
-            System.out.println("Vértice no válido.");
-            return null;
+            throw new CaminoNoEncontradoException("Vértice no válido.");
         }
 
         int[] distancias = new int[numVertices];
         Arrays.fill(distancias, Integer.MAX_VALUE);
-        distancias[origen] = 0; // Distancia al origen es 0
+        distancias[origen] = 0;
 
-        boolean[] visitado = new boolean[numVertices]; // Array para marcar los vértices visitados
-        int[] predecesor = new int[numVertices]; // Para reconstruir el camino
+        boolean[] visitado = new boolean[numVertices];
+        int[] predecesor = new int[numVertices];
+        Arrays.fill(predecesor, -1); // -1 significa que no hay predecesor
 
-        // Usar PriorityQueue para encontrar el vértice con la menor distancia
         PriorityQueue<Integer> cola = new PriorityQueue<>((a, b) -> Integer.compare(distancias[a], distancias[b]));
         cola.add(origen);
 
         while (!cola.isEmpty()) {
-            int actual = cola.poll(); // Obtener el vértice con la menor distancia
-            if (actual == destino) break; // Si hemos llegado al destino, podemos detenernos
-
+            int actual = cola.poll();
+            if (actual == destino) break;
             visitado[actual] = true;
-
             for (int i = 0; i < numVertices; i++) {
                 if (matrizAdyacencia[actual][i] > 0 && !visitado[i]) {
                     int nuevaDistancia = distancias[actual] + matrizAdyacencia[actual][i];
@@ -117,12 +111,26 @@ public class GrafoDirigido {
                 }
             }
         }
+        if (distancias[destino] == Integer.MAX_VALUE) {
+            throw new CaminoNoEncontradoException("No hay camino entre los vértices " + origenId + " y " + destinoId);
+        }
+
         ArrayList<Vertice> camino = new ArrayList<>();
-        for (int at = destino; at != origen; at = predecesor[at]) {
+        for (int at = destino; at != -1; at = predecesor[at]) {
             camino.add(0, vertices.get(at));
         }
-        camino.add(0, vertices.get(origen));
         return camino;
     }
+
+    public int calcularPesoTotal(ArrayList<Vertice> camino) {
+        int pesoTotal = 0;
+        for (int i = 0; i < camino.size() - 1; i++) {
+            int origen = encontrarIndicePorId(camino.get(i).getId());
+            int destino = encontrarIndicePorId(camino.get(i + 1).getId());
+            pesoTotal += matrizAdyacencia[origen][destino];
+        }
+        return pesoTotal;
+    }
+
 
 }
