@@ -34,10 +34,29 @@ public class Main {
         //Camino 3, prueba que sea directo:
         G.agregarArista(escuelaN1.getId(), fox.getId(), 5);
 
+        //Camino 4, al reves de FOX id = 7 hacia la escuela 1 id = 1
+        G.agregarArista(fox.getId(), escuelaN2.getId(), 3);
+        G.agregarArista(escuelaN2.getId(), city.getId(), 3);
+        G.agregarArista(city.getId(), escuelaN1.getId(), 1);
+
         G.imprimirMatriz();
 
         try {
             ArrayList<Vertice> caminoMinimo = G.encontrarCaminoMinimo(1, 7);
+            System.out.print("Camino mínimo: ");
+            for (Vertice vertice : caminoMinimo) {
+                System.out.print(vertice.getId() + " ");
+            }
+            System.out.println();
+            int pesoTotal = G.calcularPesoTotal(caminoMinimo);
+            System.out.println("Peso total del camino: " + pesoTotal);
+
+        } catch (CaminoNoEncontradoException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            ArrayList<Vertice> caminoMinimo = G.encontrarCaminoMinimo(7, 1);
             System.out.print("Camino mínimo: ");
             for (Vertice vertice : caminoMinimo) {
                 System.out.print(vertice.getId() + " ");
